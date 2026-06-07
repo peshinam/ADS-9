@@ -1,5 +1,6 @@
 // Copyright 2022 NNTU-CS
 #include <algorithm>
+#include <cstdint>
 #include <vector>
 
 #include "../include/tree.h"
@@ -51,7 +52,6 @@ int PMTree::getSize() const {
     return sizeAlphabet;
 }
 
-
 static void dfsAll(Node* node,
                    std::vector<char>& path,
                    std::vector<std::vector<char>>& result,
@@ -73,7 +73,6 @@ static void dfsAll(Node* node,
     }
 }
 
-
 std::vector<std::vector<char>> getAllPerms(PMTree& tree) {
     std::vector<std::vector<char>> result;
     std::vector<char> path;
@@ -82,7 +81,6 @@ std::vector<std::vector<char>> getAllPerms(PMTree& tree) {
 
     return result;
 }
-
 
 std::vector<char> getPerm1(PMTree& tree, int num) {
     std::vector<std::vector<char>> perms = getAllPerms(tree);
@@ -94,9 +92,8 @@ std::vector<char> getPerm1(PMTree& tree, int num) {
     return perms[num - 1];
 }
 
-
-static long long factorial(int n) {
-    long long result = 1;
+static int64_t factorial(int n) {
+    int64_t result = 1;
 
     for (int i = 2; i <= n; i++) {
         result *= i;
@@ -105,24 +102,22 @@ static long long factorial(int n) {
     return result;
 }
 
-
 std::vector<char> getPerm2(PMTree& tree, int num) {
     int n = tree.getSize();
 
-    long long total = factorial(n);
+    int64_t total = factorial(n);
 
     if (num < 1 || num > total) {
         return {};
     }
 
     std::vector<char> result;
-
     Node* current = tree.getRoot();
 
     int index = num - 1;
 
     for (int level = 0; level < n; level++) {
-        long long block = factorial(n - level - 1);
+        int64_t block = factorial(n - level - 1);
 
         int childIndex = static_cast<int>(index / block);
 
