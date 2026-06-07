@@ -1,30 +1,27 @@
 // Copyright 2022 NNTU-CS
 #ifndef INCLUDE_TREE_H_
 #define INCLUDE_TREE_H_
+
 #include <vector>
 
-struct Node
-{
+struct Node {
     char value;
     std::vector<Node*> children;
 
-    Node(char v = '\0')
-    {
+    explicit Node(char v = '\0') {
         value = v;
     }
 };
 
-class PMTree
-{
-private:
+class PMTree {
+ private:
     Node* root;
     int sizeAlphabet;
 
-    void buildTree(Node* current,
-                   std::vector<char> symbols);
+    void buildTree(Node* current, std::vector<char> symbols);
 
-public:
-    PMTree(const std::vector<char>& symbols);
+ public:
+    explicit PMTree(const std::vector<char>& symbols);
 
     ~PMTree();
 
