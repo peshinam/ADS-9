@@ -1,26 +1,22 @@
 // Copyright 2022 NNTU-CS
+#include <algorithm>
+#include <vector>
+
 #include "../include/tree.h"
 
-#include <algorithm>
-
-PMTree::PMTree(const std::vector<char>& symbols)
-{
+PMTree::PMTree(const std::vector<char>& symbols) {
     root = new Node();
-    sizeAlphabet = symbols.size();
+    sizeAlphabet = static_cast<int>(symbols.size());
 
     buildTree(root, symbols);
 }
 
-void PMTree::buildTree(Node* current,
-                       std::vector<char> symbols)
-{
-    if (symbols.empty())
-    {
+void PMTree::buildTree(Node* current, std::vector<char> symbols) {
+    if (symbols.empty()) {
         return;
     }
 
-    for (size_t i = 0; i < symbols.size(); i++)
-    {
+    for (size_t i = 0; i < symbols.size(); i++) {
         Node* child = new Node(symbols[i]);
         current->children.push_back(child);
 
@@ -31,32 +27,111 @@ void PMTree::buildTree(Node* current,
     }
 }
 
-void PMTree::clear(Node* node)
-{
-    if (node == nullptr)
-    {
+void PMTree::clear(Node* node) {
+    if (node == nullptr) {
         return;
     }
 
-    for (Node* child : node->children)
-    {
+    for (Node* child : node->children) {
         clear(child);
     }
 
     delete node;
 }
 
-PMTree::~PMTree()
-{
+PMTree::~PMTree() {
     clear(root);
 }
 
-Node* PMTree::getRoot()
-{
+Node* PMTree::getRoot() {
     return root;
 }
 
-int PMTree::getSize() const
-{
+int PMTree::getSize() const {
     return sizeAlphabet;
+}
+
+
+static void dfsAll(Node* node,
+                   std::vector<char>& path,
+                   std::vector<std::vector<char>>& result,
+                   int depth) {
+    if (node->value != '\0') {
+        path.push_back(node->value);
+    }
+
+    if (static_cast<int>(path.size()) == depth) {
+        result.push_back(path);
+    } else {
+        for (Node* child : node->children) {
+            dfsAll(child, path, result, depth);
+        }
+    }
+
+    if (node->value != '\0') {
+        path.pop_back();
+    }
+}
+
+
+std::vector<std::vector<char>> getAllPerms(PMTree& tree) {
+    std::vector<std::vector<char>> result;
+    std::vector<char> path;
+
+    dfsAll(tree.getRoot(), path, result, tree.getSize());
+
+    return result;
+}
+
+
+std::vector<char> getPerm1(PMTree& tree, int num) {
+    std::vector<std::vector<char>> perms = getAllPerms(tree);
+
+    if (num < 1 || num > static_cast<int>(perms.size())) {
+        return {};
+    }
+
+    return perms[num - 1];
+}
+
+
+static long long factorial(int n) {
+    long long result = 1;
+
+    for (int i = 2; i <= n; i++) {
+        result *= i;
+    }
+
+    return result;
+}
+
+
+std::vector<char> getPerm2(PMTree& tree, int num) {
+    int n = tree.getSize();
+
+    long long total = factorial(n);
+
+    if (num < 1 || num > total) {
+        return {};
+    }
+
+    std::vector<char> result;
+
+    Node* current = tree.getRoot();
+
+    int index = num - 1;
+
+    for (int level = 0; level < n; level++) {
+        long long block = factorial(n - level - 1);
+
+        int childIndex = static_cast<int>(index / block);
+
+        index %= static_cast<int>(block);
+
+        current = current->children[childIndex];
+
+        result.push_back(current->value);
+    }
+
+    return result;
 }
