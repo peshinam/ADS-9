@@ -3,12 +3,12 @@
 #define INCLUDE_TREE_H_
 #include <vector>
 
-struct PMNode
+struct Node
 {
     char value;
-    std::vector<PMNode*> children;
+    std::vector<Node*> children;
 
-    PMNode(char v = 0)
+    Node(char v = '\0')
     {
         value = v;
     }
@@ -16,16 +16,23 @@ struct PMNode
 
 class PMTree
 {
-public:
-    PMNode* root;
-    int alphabetSize;
+private:
+    Node* root;
+    int sizeAlphabet;
 
+    void buildTree(Node* current,
+                   std::vector<char> symbols);
+
+public:
     PMTree(const std::vector<char>& symbols);
+
     ~PMTree();
 
-private:
-    void buildTree(PMNode* node, std::vector<char> symbols);
-    void clear(PMNode* node);
+    void clear(Node* node);
+
+    Node* getRoot();
+
+    int getSize() const;
 };
 
 std::vector<std::vector<char>> getAllPerms(PMTree& tree);
